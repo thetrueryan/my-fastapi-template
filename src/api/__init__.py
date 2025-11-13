@@ -9,4 +9,3 @@ router.include_router(
     v1.router,
     prefix=settings.api.prefix,
 )
-

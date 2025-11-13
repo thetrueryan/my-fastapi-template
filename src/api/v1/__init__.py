@@ -10,4 +10,3 @@ router.include_router(
     prefix=settings.api.v1.prefix,
     tags=["status"],
 )
-
