@@ -2,15 +2,18 @@ from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
-
 from alembic import context
+
+from src.core.config import settings
+from src.core.models.base import Base
 
 config = context.config
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-target_metadata = None
+config.set_main_option("sqlalchemy.url", settings.db.url_async + "?async_fallback=True")
+target_metadata = Base.metadata
 
 
 def run_migrations_offline() -> None:
@@ -34,7 +37,11 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(connection=connection, target_metadata=target_metadata)
+        context.configure(
+            connection=connection,
+            target_metadata=target_metadata,
+            compare_server_default=True,
+        )
 
         with context.begin_transaction():
             context.run_migrations()
