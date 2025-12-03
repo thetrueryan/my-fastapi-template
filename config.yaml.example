@@ -1,0 +1,19 @@
+listen: :443
+
+
+acme:
+  domains:
+    - "test_domen.xyz"    
+  email: "admin@test_domen.xyz"
+
+auth:
+  type: userpass
+  userpass:
+    user1: "user1_pass"
+    user2: "user2_pass"
+masquerade:
+  type: proxy
+  proxy:
+    url: https://example.com
+    rewriteHost: true
+  http3: true
