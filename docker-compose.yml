@@ -1,23 +1,28 @@
-version: '3.8'
-
 services:
-  postgres:
-    image: postgres:16.4-alpine
-    container_name: fastapi-habbits-postgres
-    ports:
-      - "${APP_CONFIG__DB__PORT:-5432}:5432"
-    environment:
-      POSTGRES_USER: "${APP_CONFIG__DB__USER:-postgres}"
-      POSTGRES_PASSWORD: "${APP_CONFIG__DB__PASSWD:-postgres}"
-      POSTGRES_DB: "${APP_CONFIG__DB__NAME:-postgres}"
+  hysteria:
+    image: tobyxdd/hysteria:latest
+    container_name: hysteria
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${APP_CONFIG__DB__USER:-postgres}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      - ./hysteria/config.yaml:/etc/hysteria/config.yaml
+    command: ["server", "-c", "/etc/hysteria/config.yaml"]
+    ports:
+      - "8443:443/udp"
+      - "8443:443/tcp"
+    restart: always
+    cap_add:
+      - NET_ADMIN
 
-volumes:
-  postgres_data:
+  api:
+    build: .
+    container_name: hysteria-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./hysteria/config.yaml:/app/hysteria/config.yaml
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - APP_CONFIG__HYSTERIA__CONTAINER_NAME=hysteria
+      - APP_CONFIG__RUN__HOST=0.0.0.0
+    depends_on:
+      - hysteria
 
