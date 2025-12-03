@@ -27,24 +27,15 @@ class ApiPrefix(BaseModel):
     v1: ApiV1Prefix = ApiV1Prefix()
 
 
-class DbConfig(BaseModel):
-    host: str = "localhost"
-    passwd: str | None = None
-    user: str = "postgres"
-    name: str = "postgres"
-    port: int = 5432
-
-    convention: dict = {
-        "ix": "ix_%(column_0_label)s",
-        "uq": "uq_%(table_name)s_%(column_0_name)s",
-        "ck": "ck_%(table_name)s_%(constraint_name)s",
-        "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
-        "pk": "pk_%(table_name)s",
-    }
-
-    @property
-    def url_async(self):
-        return f"postgresql+asyncpg://{self.user}:{self.passwd}@{self.host}:{self.port}/{self.name}"
+class HysteriaConfig(BaseModel):
+    container_name: str = "hysteria"
+    public_host: str = "127.0.0.1"
+    public_port: int = 8443
+    acme_email: str = "admin@example.com"
+    acme_domain: str = "example.com"
+    listen_port: str = ":443"
+    masquerade_url: str = "https://bing.com"
+    config_path: Path = BASE_PATH / "hysteria" / "config.yaml"
 
 
 class Settings(BaseSettings):
@@ -57,7 +48,7 @@ class Settings(BaseSettings):
     logger_config: LoggerConfig = LoggerConfig()
     api: ApiPrefix = ApiPrefix()
     run: RunConfig = RunConfig()
-    db: DbConfig
+    hysteria: HysteriaConfig = HysteriaConfig()
 
 
 settings = Settings()

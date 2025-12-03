@@ -6,7 +6,6 @@ import uvicorn
 
 from src.api import router as api_router
 from src.core.config import settings
-from src.core.models.db_helper import db_helper
 
 
 @asynccontextmanager
@@ -14,7 +13,6 @@ async def lifespan(app: FastAPI):
     # Startup
     yield
     # Shutdown
-    await db_helper.dispose()
 
 
 app = FastAPI(
