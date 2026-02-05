@@ -12,20 +12,19 @@ class RunConfig(BaseModel):
     host: str = "0.0.0.0"
     port: int = 8000
 
-
 class LoggerConfig(BaseModel):
-    logger_lvl: int = logging.INFO
-    logger_path: Path = BASE_PATH / "logs" / "app_logs.log"
-
+    lvl: int = logging.INFO
+    logs_path: Path = BASE_PATH / "logs" / "app_logs.log"
+    log_format: str = "%(asctime)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s"
+    max_bytes: int = 5 * 1024 * 1024
+    backup_count: int = 3
 
 class ApiV1Prefix(BaseModel):
     prefix: str = "/v1"
 
-
 class ApiPrefix(BaseModel):
     prefix: str = "/api"
     v1: ApiV1Prefix = ApiV1Prefix()
-
 
 class DbConfig(BaseModel):
     host: str = "localhost"
@@ -46,7 +45,6 @@ class DbConfig(BaseModel):
     def url_async(self):
         return f"postgresql+asyncpg://{self.user}:{self.passwd}@{self.host}:{self.port}/{self.name}"
 
-
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=BASE_PATH / ".env",
@@ -54,7 +52,7 @@ class Settings(BaseSettings):
         env_nested_delimiter="__",
         env_prefix="APP_CONFIG__",
     )
-    logger_config: LoggerConfig = LoggerConfig()
+    logger: LoggerConfig = LoggerConfig()
     api: ApiPrefix = ApiPrefix()
     run: RunConfig = RunConfig()
     db: DbConfig
