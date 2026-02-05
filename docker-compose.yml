@@ -1,9 +1,7 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:16.4-alpine
-    container_name: fastapi-habbits-postgres
+    container_name: app-db
     ports:
       - "${APP_CONFIG__DB__PORT:-5432}:5432"
     environment:
